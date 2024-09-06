@@ -1,6 +1,6 @@
 # Telegram Üye Yönetim Botu
 
-Bu proje, bir Telegram botu ile belirli bir gruptaki üyelerin süreli olarak eklenmesini, silinmesini, sürelerinin değiştirilmesini ve süresi dolan üyelerin gruptan otomatik olarak çıkarılmasını sağlar. Bot, SQLite veritabanı kullanarak kullanıcı bilgilerini saklar ve yönetir.
+Bu proje, bir Telegram botu ile belirli bir gruptaki üyelerin süreli olarak eklenmesini, silinmesini, sürelerinin değiştirilmesini, mevcut süreye ekleme yapılmasını ve süresi dolan üyelerin gruptan otomatik olarak çıkarılmasını sağlar. Bot, SQLite veritabanı kullanarak kullanıcı bilgilerini saklar ve yönetir.
 
 ## Proje Dosya Yapısı
 
@@ -18,7 +18,7 @@ Projeniz aşağıdaki dosyaları ve klasörleri içermelidir:
 
 ### 1. `bot.py`
 Bu dosya botun ana çalıştırılabilir dosyasıdır. Botun işlevlerini yerine getiren komutlar ve fonksiyonlar burada tanımlanmıştır. Bu dosyada:
-- `/uyeekle`, `/uyelistesi`, `/suredegistir`, `/uyesil` gibi komutlar ile kullanıcı yönetimi sağlanır.
+- `/uyeekle`, `/uyelistesi`, `/suredegistir`, `/sureekle`, `/uyesil` gibi komutlar ile kullanıcı yönetimi sağlanır.
 - `kick_expired_users` fonksiyonu ile süresi dolmuş kullanıcılar gruptan otomatik olarak çıkarılır.
 
 ### 2. `.env`
@@ -57,14 +57,12 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ```
 
-### 5. `/logs` (İsteğe Bağlı)
-Logları saklamak için kullanabileceğiniz bir dizindir. Bu, botun çalışırken ürettiği hata mesajlarını veya çıktıları kaydetmek için kullanılabilir.
-
 ## Komutlar
 
 - **/uyelistesi**: Tüm kullanıcıları ve üyeliklerinin kalan sürelerini listeler.
 - **/uyeekle <user_id> <süre>**: Belirtilen kullanıcı ID'sini belirtilen süre ile gruba ekler. Süre formatı `10m`, `1h`, `2d` gibi olmalıdır.
 - **/suredegistir <user_id> <yeni_süre>**: Belirtilen kullanıcı ID'sinin süresini günceller.
+- **/sureekle <user_id> <eklencek_süre>**: Belirtilen kullanıcı ID'sinin mevcut süresine ek süre ekler. Süre formatı `10m`, `1h`, `2d` gibi olmalıdır.
 - **/uyesil <user_id>**: Belirtilen kullanıcı ID'sini veritabanından siler ve üyeliğini iptal eder.
 
 ## Servis Olarak Çalıştırma
@@ -107,7 +105,7 @@ Botu sisteminizde servis olarak çalıştırmak için bir systemd servis dosyas�
 ## Geliştirici Notları
 
 - **Admin Kontrolü**: Sadece `.env` dosyasına eklenmiş adminler bot komutlarını çalıştırabilir. Admin ID'lerini güncelleyerek bu yetkilendirmeyi değiştirebilirsiniz.
-- **Üye Ekleme Formatı**: Üyelik süresini eklerken süreyi `m` (dakika), `h` (saat), veya `d` (gün) formatında belirtmelisiniz. Örneğin: `10m`, `2h`, `3d`.
+- **Üye Ekleme ve Süre Formatı**: Üyelik süresini eklerken süreyi `m` (dakika), `h` (saat), veya `d` (gün) formatında belirtmelisiniz. Örneğin: `10m`, `2h`, `3d`.
 - **Süresi Dolan Üyeler**: Bot her 30 saniyede bir süresi dolmuş üyeleri otomatik olarak kontrol eder ve süresi dolanları gruptan çıkarır.
 
 ## Sorun Giderme
@@ -121,7 +119,3 @@ Botu sisteminizde servis olarak çalıştırmak için bir systemd servis dosyas�
 ## Lisans
 
 Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına göz atın.
-
----
-
-Bu README dosyası, botun nasıl çalıştığını, kurulacağını ve yönetileceğini detaylı bir şekilde anlatır.
