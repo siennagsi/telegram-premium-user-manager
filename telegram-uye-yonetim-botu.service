@@ -1,0 +1,14 @@
+[Unit]
+Description=Telegram Üye Yönetim Botu
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/ubuntu/bot.py
+WorkingDirectory=/home/ubuntu
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
