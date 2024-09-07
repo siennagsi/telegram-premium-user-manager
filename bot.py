@@ -127,6 +127,40 @@ async def change_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except ValueError:
         await update.message.reply_text("User ID geçersiz.")
 
+# /sureekle komutunun işleyicisi
+async def extend_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_admin(update.message.from_user.id):
+        return
+
+    if len(context.args) != 2:
+        await update.message.reply_text("Kullanım: /sureekle <user_id> <eklencek_süre>")
+        return
+
+    try:
+        user_id = int(context.args[0])
+        additional_duration = context.args[1]
+        additional_duration_in_seconds = parse_duration(additional_duration)
+        if additional_duration_in_seconds is None:
+            await update.message.reply_text("Süre formatı geçersiz. Lütfen '10m', '1h', '2d' gibi bir format kullanın.")
+            return
+
+        c.execute("SELECT expiry_epoch FROM users WHERE user_id = ?", (user_id,))
+        result = c.fetchone()
+
+        if result is None:
+            await update.message.reply_text(f"User ID: {user_id} bulunamadı.")
+            return
+
+        current_expiry = result[0]
+        new_expiry = current_expiry + additional_duration_in_seconds
+
+        c.execute("UPDATE users SET expiry_epoch = ? WHERE user_id = ?", (new_expiry, user_id))
+        conn.commit()
+
+        await update.message.reply_text(f"User ID: {user_id} süresine {additional_duration} eklendi.")
+    except ValueError:
+        await update.message.reply_text("User ID geçersiz.")
+
 # Süre formatını saniyeye çeviren yardımcı fonksiyon
 def parse_duration(duration_str: str) -> int:
     try:
@@ -195,6 +229,7 @@ def main():
     application.add_handler(CommandHandler("uyelistesi", list_users))
     application.add_handler(CommandHandler("uyeekle", add_user))
     application.add_handler(CommandHandler("suredegistir", change_duration))
+    application.add_handler(CommandHandler("sureekle", extend_duration))  # Yeni eklenen komut
     application.add_handler(CommandHandler("uyesil", delete_user))  # Yeni eklenen komut
 
     # İlk çalışmada ve düzenli olarak süresi dolmuş kullanıcıları kontrol etme
